@@ -1,15 +1,40 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Functions below are used for calculating matrix inversion with caching.
 
-## Write a short comment describing this function
+## Provides access to a source and an inverted matrices through functions 'set', 'get', 'getInverse', 'setInverse'.
+## If the 'set' function gets identical to 'x' matrix it don't change 'm' variable.
 
 makeCacheMatrix <- function(x = matrix()) {
-
+    m <- NULL
+    set <- function(y) {
+        if (!identical(x,y))
+            m <<- NULL
+       
+        x <<- y
+    }
+    get <- function() x
+    setInverse <- function(solvedMatrix) m <<- solvedMatrix
+    getInverse <- function() m
+    list(set = set, get = get,
+         setInverse = setInverse,
+         getInverse = getInverse)
 }
 
 
-## Write a short comment describing this function
+## Inverts matrix using cached data if possible.
+## If it's impossible to use cached inverted matrix, 
+## then the function calculates matrix inverstion first, stores the result.
+## Every time when user gets cached data the function prints a message "getting cached data".
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+    m <- x$getInverse()
+    if(is.null(m)) {
+        data <- x$get()
+        m <- solve(data, ...)
+        x$setInverse(m)
+    }
+    else {
+        message("getting cached data")
+    }
+    
+    m
 }
